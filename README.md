@@ -10,6 +10,6 @@ A very basic updater for dynamic DNS services provided by <http://dns.he.net/>.
  4. Run dns.he.net_updater.sh.
  5. [Optional]: Use the included LaunchDaemon to schedule the updates.
  
-License: Freeware.<br />Warranty: None.
+License: MIT.<br />Warranty: None.
 
 Enjoy!
