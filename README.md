@@ -1,4 +1,4 @@
-### dns.he.net OS X dynamic dns updater
+### dns.he.net Linux/OS X dynamic dns updater
 
 A very basic updater for dynamic DNS services provided by <http://dns.he.net/>. 
 
