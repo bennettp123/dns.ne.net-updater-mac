@@ -29,7 +29,7 @@ do
       break
     fi
   else
-    currentip=$(/usr/bin/curl -4 -k -s "http://checkip.dns.he.net" | /bin/grep -iE "Your ?IP ?address ?is ?: ?" | /bin/sed -r 's/.*\s+([[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}).*/\1/')
+    currentip=$(/usr/bin/curl -4 -s "http://checkip.dns.he.net" | /bin/grep -iE "Your ?IP ?address ?is ?: ?" | /bin/sed -r 's/.*\s+([[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}).*/\1/')
   fi
 
   oldip=$(echo "${previous}" \
@@ -42,7 +42,7 @@ do
 
   if [ "_$currentip" != "_$oldip" ]; then
     /usr/bin/logger -i -t com.bennettp123.dyndns "${hostname}: old ip: ${oldip}; current ip: ${currentip}; updating..."
-    result1=$(/usr/bin/curl -k -s "${url}" -d "hostname=${hostname}" -d "password=${password}")
+    result1=$(/usr/bin/curl -4 -s "${url}" -d "hostname=${hostname}" -d "password=${password}")
     retval1=$?
     /usr/bin/logger -i -t com.bennettp123.dyndns "${hostname}:${result1}"
     echo "${hostname}:${result1}" > "${previous_file}"
@@ -53,8 +53,8 @@ do
 
   retval=`bc <<EOF
     $retval1 + $retval
-  EOF
-  `
+EOF
+`
 
 done
 
