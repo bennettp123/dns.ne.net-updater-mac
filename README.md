@@ -5,11 +5,11 @@ A very basic updater for dynamic DNS services provided by <http://dns.he.net/>.
 ## Instructions:
 
  1. Edit dns.he.net_updater.sh in a text editor, and modify the hostname and password fields.
- 2. By default, a custom IP is not sent. If you wish to send a custom IP address, uncomment the two lines below the myip variable.
+ 2. If desired, set $use_ifconfig='yes' and $iface='eth0'. Otherwise, the script will use http://checkip.dns.he.net to determine your public IP address.
  3. If necessary, `chmod +x dns.he.net_updater.sh`.
  4. Run dns.he.net_updater.sh.
  5. [Optional]: Use the included LaunchDaemon to schedule the updates. Or cron. Whatever.
- 
+
 License: MIT.<br />Warranty: None.
 
 Enjoy!
