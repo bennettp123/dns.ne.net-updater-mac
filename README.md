@@ -8,7 +8,7 @@ A very basic updater for dynamic DNS services provided by <http://dns.he.net/>.
  2. By default, a custom IP is not sent. If you wish to send a custom IP address, uncomment the two lines below the myip variable.
  3. If necessary, `chmod +x dns.he.net_updater.sh`.
  4. Run dns.he.net_updater.sh.
- 5. [Optional]: Use the included LaunchDaemon to schedule the updates.
+ 5. [Optional]: Use the included LaunchDaemon to schedule the updates. Or cron. Whatever.
  
 License: MIT.<br />Warranty: None.
 
