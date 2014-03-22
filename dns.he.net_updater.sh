@@ -1,8 +1,7 @@
 #!/bin/bash
 
 url="https://dyn.dns.he.net/nic/update"
-previous_file=~/.dyndns
-previous=$(cat "${previous_file}" 2>/dev/null)
+previous_file_prefix=~/.dyndns
 
 retval=0
 
@@ -16,6 +15,9 @@ do
 
   hostname=$( /bin/echo -n "$hostname_password" | /bin/sed 's/:[^:]*//' )
   password=$( /bin/echo -n "$hostname_password" | /bin/sed 's/[^:]*://' )
+
+  previous_file="${previous_file_prefix}.${hostname}"
+  previous=$(cat "${previous_file}" 2>/dev/null)
 
   currentip=''
   if [ "$use_private_ip" == "yes" ]; then
