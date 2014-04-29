@@ -85,7 +85,7 @@ fi
 
 oldip=$(echo "${previous}" \
           | grep "${hostname}" \
-          | sed "$sed_ex_sw" 's/.*\s+([[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}).*/\1/')
+          | sed "$sed_ex_sw" 's/.*\ ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}).*/\1/')
 
 if [ "_$oldip" = "_" ]; then
   oldip="unknown"
