@@ -93,7 +93,7 @@ fi
 
 if [ "_$currentip" != "_$oldip" ]; then
   logger -i -t com.bennettp123.dyndns "${hostname}: old ip: ${oldip}; current ip: ${currentip}; updating..."
-  result=$(curl -k -4 -s "${url}" -d "hostname=${hostname}" -d "password=${password}" -w '%{http_code}')
+  result=$(curl -k -4 -s "${url}" -d "hostname=${hostname}" -d "password=${password}" -d "myip=${currentip}")
   retval=$?
   logger -i -t com.bennettp123.dyndns "${hostname}:${result}"
   echo "${hostname}:${result}" > "${previous_file}"
