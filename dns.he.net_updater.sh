@@ -13,6 +13,15 @@ By default, $(basename $0) queries dns.he.net to determine the public IP address
 When called with -l or -i, it uses the address of a local interface instead.
 "
 
+# detect sed syntax
+sed_ex_sw='-E' #default
+for sw in '-r' '-E'; do
+  if echo 1 | sed "$sw" 's/1/2/' 2>&1 | grep --silent 2; then
+    sed_ex_sw="$sw"
+    break
+  fi
+done
+
 url="https://dyn.dns.he.net/nic/update"
 previous_file_prefix=~/.dns.he.net
 
@@ -62,21 +71,21 @@ previous=$(cat "${previous_file}" 2>/dev/null)
 currentip=''
 if [ "$use_local_iface_address" == "yes" ]; then
   if which ip >/dev/null 2>&1; then
-    currentip=$(ip addr show dev eth0 | grep inet\ .*scope\ global | sed -E 's/[^0-9]*([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})\/[0-9]{1,2}.*/\1/g')
+    currentip=$(ip addr show dev eth0 | grep inet\ .*scope\ global | sed "$sed_ex_sw" 's/[^0-9]*([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})\/[0-9]{1,2}.*/\1/g')
   elif which ifconfig >/dev/null 2>&1; then
-    currentip=$(ifconfig en0 inet | grep -E '^.*inet [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}.*$' | sed -E 's/^.*inet ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}).*$/\1/')
+    currentip=$(ifconfig en0 inet | grep -E '^.*inet [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}.*$' | sed "$sed_ex_sw" 's/^.*inet ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}).*$/\1/')
   else
     logger -i -t com.bennettp123.dyndns "${hostname}: could not determine local IP address"
     retval=1
     break
   fi
 else
-  currentip=$(curl -4 -s "http://checkip.dns.he.net" | grep -iE "Your ?IP ?address ?is ?: ?" | sed -r 's/.*\s+([[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}).*/\1/')
+  currentip=$(curl -4 -s "http://checkip.dns.he.net" | grep -iE "Your ?IP ?address ?is ?: ?" | sed "$sed_ex_sw" 's/.*\s+([[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}).*/\1/')
 fi
 
 oldip=$(echo "${previous}" \
           | grep "${hostname}" \
-          | sed -r 's/.*\s+([[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}).*/\1/')
+          | sed "$sed_ex_sw" 's/.*\s+([[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}).*/\1/')
 
 if [ "_$oldip" = "_" ]; then
   oldip="unknown"
