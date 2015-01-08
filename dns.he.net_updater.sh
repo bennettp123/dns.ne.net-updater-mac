@@ -71,16 +71,16 @@ previous=$(cat "${previous_file}" 2>/dev/null)
 currentip=''
 if [ "$use_local_iface_address" == "yes" ]; then
   if which ip >/dev/null 2>&1; then
-    currentip=$(ip addr show dev eth0 | grep inet\ .*scope\ global | sed "$sed_ex_sw" 's/[^0-9]*([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})\/[0-9]{1,2}.*/\1/g')
+    currentip=$(ip addr show dev "$iface" | grep inet\ .*scope\ global | sed "$sed_ex_sw" 's/[^0-9]*([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})\/[0-9]{1,2}.*/\1/g')
   elif which ifconfig >/dev/null 2>&1; then
-    currentip=$(ifconfig en0 inet | grep -E '^.*inet [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}.*$' | sed "$sed_ex_sw" 's/^.*inet ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}).*$/\1/')
+    currentip=$(ifconfig "$iface" inet | grep -E '^.*inet [0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}.*$' | sed "$sed_ex_sw" 's/^.*inet ([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}).*$/\1/')
   else
     logger -i -t com.bennettp123.dyndns "${hostname}: could not determine local IP address"
     retval=1
     break
   fi
 else
-  currentip=$(curl -4 -s "http://checkip.dns.he.net" | grep -iE "Your ?IP ?address ?is ?: ?" | sed "$sed_ex_sw" 's/.*\s+([[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}).*/\1/')
+  currentip=$(curl -4 -x "${http_proxy}" -s "http://checkip.dns.he.net" | grep -iE "Your ?IP ?address ?is ?: ?" | sed "$sed_ex_sw" 's/.*\s+([[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}\.[[:digit:]]{1,3}).*/\1/')
 fi
 
 oldip=$(echo "${previous}" \
@@ -93,7 +93,7 @@ fi
 
 if [ "_$currentip" != "_$oldip" ]; then
   logger -i -t com.bennettp123.dyndns "${hostname}: old ip: ${oldip}; current ip: ${currentip}; updating..."
-  result=$(curl -k -4 -s "${url}" -d "hostname=${hostname}" -d "password=${password}" -d "myip=${currentip}")
+  result=$(curl -k -4 -x "${http_proxy}" -s "${url}" -d "hostname=${hostname}" -d "password=${password}" -d "myip=${currentip}")
   retval=$?
   logger -i -t com.bennettp123.dyndns "${hostname}:${result}"
   echo "${hostname}:${result}" > "${previous_file}"
